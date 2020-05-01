@@ -6,9 +6,9 @@ var path = require('path');
 
 var app = express();
 
-app.set('views', path.join(__dirname, 'views'));
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
+// app.set('views', path.join(__dirname, 'views'));
+// app.engine('html', require('ejs').renderFile);
+// app.set('view engine', 'html');
 
 
 app.use(cors());
@@ -20,29 +20,34 @@ app.get('/', function (req, res) {
     res.send("This is login provider server");
 })
 
-app.get('/login', function (req, res) {
-    res.render('login');
-    
-    // fetch('http://127.0.0.1:4445/oauth2/auth/requests/login/accept?login_challenge=' + body.login_challenge, {
-    //     method: 'PUT',
-    //     headers: {
-    //         Accept: 'application/json',
-    //         'Content-Type': 'application/json',
-    //         'X-Forwarded-Proto': 'https'
-    //     },
-    //     body: JSON.stringify({
-    //         subject: body.username,
-    //         remember: true,
-    //         remember_for: 3600
-    //     }),
-    // }).then(response => {
-    //     return response.json();
-    // }).then(response => {
-    //     console.log(response.redirect_to);
-    //     res.redirect(response.redirect_to);
-    // })
+app.post('/loginRoute', function (req, res) {
+    // res.render('login');
+    body = req.body;
+    console.log(body);
+    fetch('http://127.0.0.1:4445/oauth2/auth/requests/login/accept?login_challenge=' + body.login_challenge, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-Forwarded-Proto': 'https'
+        },
+        body: JSON.stringify({
+            subject: body.username,
+            remember: true,
+            remember_for: 3600
+        }),
+    }).then(response => {
+        return response.json();
+    }).then(response => {
+        console.log(response.redirect_to);
+        res.redirect(response.redirect_to);
+    })
 });
 
-console.log("Server is listening at 3000");
+app.get('/consent', function(req, res){
+    res.render('consent');
+});
 
-app.listen(3000);
+console.log("Server is listening at 3001");
+
+app.listen(3001);

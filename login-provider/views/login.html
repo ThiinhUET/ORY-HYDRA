@@ -1,20 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script language='javascript' type='text/javascript'>
-        function submit(){
+        function submit() {
+            const urlParams = new URLSearchParams(window.location.search);
             var username = document.getElementById("username");
             var password = document.getElementById("password");
-          console.log(username.value, password.value);
+            var url = 'http://127.0.0.1:4445/oauth2/auth/requests/login/accept?login_challenge=' + urlParams.get('login_challenge');
+            var data = JSON.stringify({
+                subject: username.value,
+                remember: true,
+                remember_for: 3600
+            })
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('PUT', url);
+            xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+            //   console.log(username.value, password.value, urlParams.get('login_challenge'));
+            xhr.onload = function () {
+                var redirectUrl = JSON.parse(xhr.responseText);
+                if (xhr.readyState == 4 && xhr.status == "200") {
+                    console.log(redirectUrl);
+                } else {
+                    console.error(redirectUrl);
+                }
+            }
+            xhr.send(data);
         }
     </script>
 </head>
+
 <body>
-    <input placeholder="Username" value = "" id="username"></input>
-    <input placeholder="Password" value = "" id="password"></input>
+    <input placeholder="Username" value="" id="username"></input>
+    <input placeholder="Password" value="" id="password"></input>
     <button onclick="submit()">Submit</button>
 </body>
+
 </html>
